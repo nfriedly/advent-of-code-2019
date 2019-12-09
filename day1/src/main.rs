@@ -1,13 +1,28 @@
+use std::cmp;
+
 fn main() {
     println!("Hello, world! {}", fuel_required(7));
-    println!("total fuel needed: {}", sum_fuel());
+    println!("total fuel needed for mass + fuel: {}", sum_fuel())
 }
 
-fn fuel_required(mass: u64) -> u64 {
-    return (mass as f64 / 3.0).floor() as u64 - 2;
+fn fuel_required(mass: usize) -> usize {
+    let fuel: isize = (mass as f64 / 3.0).floor() as isize - 2;
+    return cmp::max(fuel, 0) as usize;
 }
 
-const weights: &str = "113481
+fn fuel_required_including_fuel_mass(mass: usize) -> usize {
+    let mut fuel = fuel_required(mass);
+    let mut fuel_fuel = fuel;
+    loop {
+        fuel_fuel = fuel_required(fuel_fuel);
+        if fuel_fuel == 0 {
+            return fuel;
+        }
+        fuel += fuel_fuel;
+    }
+}
+
+const WEIGHTS: &str = "113481
 140620
 123826
 86474
@@ -108,13 +123,13 @@ const weights: &str = "113481
 69633
 149274";
 
-fn sum_fuel() -> u64 {
-    let mut fuel: u64 = 0;
-    for line in weights.lines() {
-        let weight:u64 = line.parse().unwrap();
-        let lineFuel = fuel_required(weight);
-        println!("weight: {}, fuel: {}", weight, lineFuel);
-        fuel += lineFuel;
+fn sum_fuel() -> usize {
+    let mut fuel: usize = 0;
+    for line in WEIGHTS.lines() {
+        let weight: usize = line.parse().unwrap();
+        let line_fuel = fuel_required_including_fuel_mass(weight);
+        println!("weight: {}, fuel: {}", weight, line_fuel);
+        fuel += line_fuel;
     }
     return fuel;
 }
@@ -130,4 +145,17 @@ mod tests {
         assert_eq!(fuel_required(1969), 654);
         assert_eq!(fuel_required(100756), 33583);
     }
+
+    #[test]
+    fn no_negative() {
+        assert_eq!(fuel_required(2), 0);
+    }
+
+    #[test]
+    fn fuel_fuel() {
+        assert_eq!(fuel_required_including_fuel_mass(14), 2);
+        assert_eq!(fuel_required_including_fuel_mass(1969), 966);
+        assert_eq!(fuel_required_including_fuel_mass(100756), 50346);
+    }
+
 }
