@@ -157,5 +157,4 @@ mod tests {
         assert_eq!(fuel_required_including_fuel_mass(1969), 966);
         assert_eq!(fuel_required_including_fuel_mass(100756), 50346);
     }
-
 }
