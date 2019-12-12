@@ -65,6 +65,7 @@ mod tests {
     fn halt() {
         assert_eq!(run_intcode(vec![99, 0, 0, 0]), [99, 0, 0, 0]);
     }
+    
     #[test]
     fn halt_short() {
         assert_eq!(run_intcode(vec![99]), [99]);
